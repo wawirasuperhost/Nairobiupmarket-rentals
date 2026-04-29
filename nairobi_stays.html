@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NairobiStays — Find Your Perfect Home Away From Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --terracotta: #C0522A;
+    --terracotta-light: #F5E8E0;
+    --terracotta-mid: #E8845C;
+    --earth: #7B5C3E;
+    --earth-light: #F0E9E1;
+    --savanna: #D4B483;
+    --savanna-light: #FBF5EB;
+    --green: #2D6A4F;
+    --green-light: #E8F5EE;
+    --ink: #1A1208;
+    --ink-mid: #4A3828;
+    --muted: #7A6A5A;
+    --border: #E8DDD4;
+    --white: #FDFAF7;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 20px rgba(26,18,8,0.08);
+    --shadow-hover: 0 8px 40px rgba(26,18,8,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--white); color:var(--ink); min-height:100vh; }
+
+  /* NAV / HEADER STRIP */
+  nav {
+    position:sticky; top:0; z-index:100;
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    padding:0 4%;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+    height:60px;
+  }
+  .logo { font-family:'Fraunces',serif; font-size:20px; font-weight:700; color:var(--terracotta); letter-spacing:-0.5px; white-space:nowrap; }
+  .logo span { color:var(--ink); }
+
+  /* INLINE SEARCH BAR IN NAV */
+  .nav-search {
+    display:flex; align-items:stretch; gap:0;
+    border:1.5px solid var(--border); border-radius:50px;
+    overflow:hidden; background:var(--white);
+    box-shadow:var(--shadow); flex:1; max-width:680px;
+    transition:box-shadow .2s, border-color .2s;
+  }
+  .nav-search:focus-within { border-color:var(--terracotta); box-shadow:0 0 0 3px rgba(192,82,42,0.1); }
+  .nav-pill {
+    flex:1; display:flex; flex-direction:column; justify-content:center;
+    padding:6px 14px; border-right:1px solid var(--border);
+    cursor:text; transition:background .15s; min-width:0;
+  }
+  .nav-pill:last-of-type { border-right:none; }
+  .nav-pill:hover { background:var(--savanna-light); }
+  .nav-pill-label { font-size:9px; font-weight:500; text-transform:uppercase; letter-spacing:0.8px; color:var(--muted); margin-bottom:2px; }
+  .nav-pill input, .nav-pill select {
+    border:none; outline:none; font:400 13px 'DM Sans',sans-serif;
+    color:var(--ink); background:transparent; width:100%;
+  }
+  .nav-pill select option { background:var(--white); }
+  .search-btn {
+    background:var(--terracotta); color:white; border:none; border-radius:50%;
+    width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; margin:7px 8px; font-size:13px;
+    transition:background .15s, transform .1s; flex-shrink:0;
+  }
+  .search-btn:hover { background:var(--earth); transform:scale(1.05); }
+  .nav-links { display:flex; align-items:center; gap:8px; white-space:nowrap; }
+  .nav-link { font-size:13px; font-weight:500; padding:7px 12px; border-radius:50px; cursor:pointer; text-decoration:none; color:var(--ink); transition:background .15s; }
+  .nav-link:hover { background:var(--earth-light); }
+  .nav-host { border:1.5px solid var(--border); border-radius:50px; }
+
+  /* NO HERO — listings are the first thing seen */
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .btn-primary {
+    background:var(--terracotta); color:white; border:none;
+    padding:14px 28px; border-radius:50px; font:500 15px 'DM Sans',sans-serif;
+    cursor:pointer; text-decoration:none;
+    transition:background .15s, transform .1s, box-shadow .15s;
+    box-shadow:0 4px 20px rgba(192,82,42,0.4);
+  }
+  .btn-primary:hover { background:#A8431E; transform:translateY(-1px); box-shadow:0 8px 30px rgba(192,82,42,0.5); }
+  .btn-secondary {
+    background:rgba(255,255,255,0.15); color:white;
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.3);
+    padding:14px 28px; border-radius:50px; font:500 15px 'DM Sans',sans-serif;
+    cursor:pointer; text-decoration:none;
+    transition:background .15s;
+  }
+  .btn-secondary:hover { background:rgba(255,255,255,0.25); }
+
+  /* HERO SEARCH CARD */
+  .hero-search-card {
+    position:relative; z-index:2;
+    background:rgba(253,250,247,0.97);
+    backdrop-filter:blur(16px);
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,0.4);
+    box-shadow:0 12px 60px rgba(26,18,8,0.25);
+    padding:10px;
+    width:100%; max-width:620px;
+    display:flex; flex-direction:column; gap:6px;
+    animation:slideUp .8s .2s ease both;
+  }
+  .search-row {
+    display:flex; align-items:stretch; gap:0;
+    border:1.5px solid var(--border); border-radius:14px;
+    overflow:hidden; background:var(--white);
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .search-row:focus-within {
+    border-color:var(--terracotta);
+    box-shadow:0 0 0 3px rgba(192,82,42,0.12);
+  }
+  .sr-field {
+    flex:1; display:flex; flex-direction:column;
+    padding:14px 18px; border-right:1.5px solid var(--border);
+    cursor:text; transition:background .15s;
+  }
+  .sr-field:last-of-type { border-right:none; }
+  .sr-field:hover { background:var(--savanna-light); }
+  .sr-label { font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:0.9px; color:var(--muted); margin-bottom:4px; }
+  .sr-field input, .sr-field select {
+    border:none; outline:none; font:400 14px 'DM Sans',sans-serif;
+    color:var(--ink); background:transparent; width:100%;
+  }
+  .sr-field select option { background:var(--white); }
+  .sr-btn {
+    background:var(--terracotta); color:white; border:none;
+    padding:0 22px; font:500 14px 'DM Sans',sans-serif; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+    transition:background .15s;
+    white-space:nowrap; min-width:110px; justify-content:center;
+  }
+  .sr-btn:hover { background:#A8431E; }
+  .search-divider {
+    display:flex; align-items:center; gap:10px;
+    padding:0 4px;
+    font-size:11px; color:rgba(122,106,90,0.5);
+  }
+  .search-divider::before, .search-divider::after {
+    content:''; flex:1; height:1px; background:var(--border);
+  }
+
+  /* SECTIONS */
+  section { padding:40px 5%; }
+  #listings { padding-top:28px; }
+  .section-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; }
+  .section-header h2 { font-family:'Fraunces',serif; font-size:clamp(1.6rem,3vw,2.2rem); font-weight:500; color:var(--ink); }
+  .section-header p { color:var(--muted); font-size:14px; max-width:400px; line-height:1.6; }
+  .see-all { font-size:14px; font-weight:500; color:var(--terracotta); text-decoration:none; white-space:nowrap; cursor:pointer; padding-bottom:2px; border-bottom:1px solid var(--terracotta); }
+
+  /* PROPERTY GRID */
+  .prop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:28px; }
+  .prop-card {
+    border-radius:var(--radius); overflow:hidden;
+    background:var(--white); border:1px solid var(--border);
+    transition:box-shadow .25s, transform .25s;
+    cursor:pointer;
+  }
+  .prop-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-4px); }
+  .prop-img {
+    height:220px; background-size:cover; background-position:center;
+    position:relative; overflow:hidden;
+  }
+  .prop-img::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(to bottom, transparent 60%, rgba(26,18,8,0.3));
+  }
+  .prop-badge {
+    position:absolute; top:14px; left:14px; z-index:1;
+    background:var(--white); border-radius:50px;
+    padding:4px 12px; font-size:11px; font-weight:500; color:var(--ink);
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  }
+  .prop-badge.new { background:var(--terracotta); color:white; }
+  .prop-wish {
+    position:absolute; top:14px; right:14px; z-index:1;
+    background:rgba(255,255,255,0.85); border:none; border-radius:50%;
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; transition:background .15s, transform .15s;
+  }
+  .prop-wish:hover { background:white; transform:scale(1.1); }
+  .prop-wish.wished { color:var(--terracotta); }
+  .prop-info { padding:16px 18px 20px; }
+  .prop-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; }
+  .prop-loc { font-size:13px; color:var(--muted); display:flex; align-items:center; gap:4px; }
+  .prop-rating { font-size:13px; font-weight:500; display:flex; align-items:center; gap:3px; }
+  .prop-name { font-family:'Fraunces',serif; font-size:16px; font-weight:500; margin-bottom:6px; color:var(--ink); line-height:1.3; }
+  .prop-meta { font-size:12px; color:var(--muted); margin-bottom:12px; }
+  .prop-price { display:flex; align-items:baseline; gap:4px; }
+  .prop-price .amount { font-size:18px; font-weight:500; color:var(--ink); }
+  .prop-price .per { font-size:13px; color:var(--muted); }
+  .prop-price .usd { font-size:12px; color:var(--muted); margin-left:4px; }
+  .prop-tags { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+  .prop-tag {
+    font-size:11px; padding:3px 10px; border-radius:50px;
+    background:var(--savanna-light); color:var(--earth); font-weight:500;
+  }
+
+  /* P1 images */
+  .pi1 { background-image:url('https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600&q=80'); }
+  .pi2 { background-image:url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&q=80'); }
+  .pi3 { background-image:url('https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=600&q=80'); }
+  .pi4 { background-image:url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&q=80'); }
+  .pi5 { background-image:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80'); }
+  .pi6 { background-image:url('https://images.unsplash.com/photo-1554995207-c18c203602cb?w=600&q=80'); }
+
+  /* EXPERIENCE SECTION */
+  .exp-section { background:var(--savanna-light); border-radius:24px; }
+  .exp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
+  .exp-card {
+    background:var(--white); border-radius:var(--radius); padding:24px;
+    border:1px solid var(--border); cursor:pointer;
+    transition:box-shadow .2s, transform .2s;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .exp-card:hover { box-shadow:var(--shadow); transform:translateY(-2px); }
+  .exp-icon { font-size:28px; }
+  .exp-card h3 { font-family:'Fraunces',serif; font-size:17px; font-weight:500; color:var(--ink); }
+  .exp-card p { font-size:13px; color:var(--muted); line-height:1.6; }
+  .exp-card .exp-price { font-size:14px; font-weight:500; color:var(--terracotta); margin-top:auto; }
+
+  /* WHY SECTION */
+  .why-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:24px; margin-top:40px; }
+  .why-card {
+    text-align:center; padding:32px 20px;
+    border-radius:var(--radius); border:1px solid var(--border);
+    transition:box-shadow .2s;
+  }
+  .why-card:hover { box-shadow:var(--shadow); }
+  .why-icon { font-size:32px; margin-bottom:14px; display:block; }
+  .why-card h3 { font-family:'Fraunces',serif; font-size:16px; font-weight:500; margin-bottom:8px; }
+  .why-card p { font-size:13px; color:var(--muted); line-height:1.6; }
+
+  /* HOST CTA */
+  .host-cta {
+    background:var(--ink); border-radius:24px;
+    display:grid; grid-template-columns:1fr 1fr;
+    overflow:hidden; min-height:320px;
+  }
+  .hc-content { padding:60px 50px; display:flex; flex-direction:column; justify-content:center; }
+  .hc-content h2 { font-family:'Fraunces',serif; font-size:clamp(1.8rem,3vw,2.4rem); font-weight:500; color:white; margin-bottom:16px; line-height:1.2; }
+  .hc-content h2 em { color:var(--savanna); font-style:italic; }
+  .hc-content p { color:rgba(255,255,255,0.6); font-size:15px; line-height:1.6; margin-bottom:28px; max-width:380px; }
+  .btn-savanna {
+    background:var(--savanna); color:var(--ink); border:none;
+    padding:14px 28px; border-radius:50px; font:500 15px 'DM Sans',sans-serif;
+    cursor:pointer; display:inline-block; text-decoration:none;
+    transition:background .15s, transform .1s;
+    width:fit-content;
+  }
+  .btn-savanna:hover { background:#C4A26C; transform:translateY(-1px); }
+  .hc-visual {
+    background:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80') center/cover;
+    position:relative;
+  }
+  .hc-visual::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(to right, rgba(26,18,8,0.4), transparent);
+  }
+
+  /* FOOTER */
+  footer {
+    background:var(--ink-mid); color:rgba(255,255,255,0.7);
+    padding:50px 5% 30px;
+  }
+  .footer-top { display:grid; grid-template-columns:2fr repeat(3,1fr); gap:40px; margin-bottom:40px; }
+  .footer-brand .logo { color:var(--savanna); font-size:20px; display:block; margin-bottom:12px; }
+  .footer-brand p { font-size:13px; line-height:1.7; max-width:280px; }
+  .footer-col h4 { font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.8px; color:white; margin-bottom:14px; }
+  .footer-col a { display:block; font-size:13px; color:rgba(255,255,255,0.6); text-decoration:none; margin-bottom:8px; transition:color .15s; cursor:pointer; }
+  .footer-col a:hover { color:var(--savanna); }
+  .footer-bottom { border-top:1px solid rgba(255,255,255,0.1); padding-top:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:gap; font-size:12px; }
+  .footer-bottom .mpesa { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:50px; }
+
+  /* MPESA BADGE */
+  .mpesa-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--green-light); color:var(--green);
+    border-radius:50px; padding:4px 12px; font-size:12px; font-weight:500;
+  }
+
+  /* MODAL OVERLAY */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; z-index:200;
+    background:rgba(26,18,8,0.6); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--white); border-radius:20px;
+    width:100%; max-width:540px; max-height:90vh; overflow-y:auto;
+    box-shadow:0 20px 60px rgba(26,18,8,0.3);
+  }
+  .modal-header {
+    padding:20px 24px; border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    position:sticky; top:0; background:var(--white); z-index:1;
+  }
+  .modal-header h3 { font-family:'Fraunces',serif; font-size:18px; font-weight:500; }
+  .modal-close { background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted); padding:4px; }
+  .modal-body { padding:24px; }
+  .modal-img { width:100%; height:240px; background-size:cover; background-position:center; border-radius:12px; margin-bottom:20px; }
+  .amenity-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+  .amenity { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-mid); }
+  .book-summary { background:var(--savanna-light); border-radius:12px; padding:18px; margin:20px 0; }
+  .book-row { display:flex; justify-content:space-between; font-size:14px; padding:4px 0; }
+  .book-row.total { font-weight:500; border-top:1px solid var(--border); margin-top:8px; padding-top:8px; font-size:15px; }
+  .date-inputs { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+  .date-inputs label { font-size:12px; font-weight:500; color:var(--muted); display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px; }
+  .date-inputs input {
+    width:100%; border:1.5px solid var(--border); border-radius:var(--radius-sm);
+    padding:10px 14px; font:400 14px 'DM Sans',sans-serif; color:var(--ink);
+    outline:none; transition:border-color .15s;
+  }
+  .date-inputs input:focus { border-color:var(--terracotta); }
+
+  /* TOAST */
+  .toast {
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px);
+    background:var(--ink); color:white; border-radius:50px;
+    padding:12px 24px; font-size:14px; z-index:300;
+    transition:transform .3s ease;
+    box-shadow:0 8px 30px rgba(26,18,8,0.3);
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* RESPONSIVE */
+  @media(max-width:768px) {
+    .host-cta { grid-template-columns:1fr; }
+    .hc-visual { display:none; }
+    .footer-top { grid-template-columns:1fr 1fr; }
+    .quick-bar { flex-direction:column; gap:12px; }
+    .qb-section { border-right:none; border-bottom:1px solid var(--border); padding:10px 0; }
+    .nav-search { display:none; }
+    .hero-img-row { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Property Name</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-img" id="modal-img"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--muted);" id="modal-loc"></span>
+        <span style="font-size:14px; font-weight:500;" id="modal-rating">⭐ 4.9</span>
+      </div>
+      <p style="font-size:14px; color:var(--ink-mid); line-height:1.7; margin-bottom:16px;" id="modal-desc"></p>
+      <div class="amenity-grid" id="modal-amenities"></div>
+      <div class="date-inputs">
+        <div>
+          <label>Check-in</label>
+          <input type="date" id="checkin" onchange="calcPrice()">
+        </div>
+        <div>
+          <label>Check-out</label>
+          <input type="date" id="checkout" onchange="calcPrice()">
+        </div>
+      </div>
+      <div class="book-summary" id="price-summary" style="display:none;">
+        <div class="book-row"><span id="nights-label">Nights</span><span id="nights-price"></span></div>
+        <div class="book-row"><span>Cleaning fee</span><span id="clean-fee"></span></div>
+        <div class="book-row"><span>Service fee</span><span id="service-fee"></span></div>
+        <div class="book-row total"><span>Total (KES)</span><span id="total-price"></span></div>
+        <div class="book-row" style="font-size:12px; color:var(--muted);"><span>M-Pesa accepted</span><span class="mpesa-badge">✓ M-Pesa</span></div>
+      </div>
+      <button class="btn-primary" style="width:100%; text-align:center; margin-top:8px;" onclick="bookNow()">Reserve Now</button>
+      <p style="font-size:12px; color:var(--muted); text-align:center; margin-top:10px;">You won't be charged yet · Free cancellation 48hrs before check-in</p>
+    </div>
+  </div>
+</div>
+
+<!-- NAV with inline search -->
+<nav>
+  <span class="logo">Nairobi<span>Stays</span></span>
+  <div class="nav-search">
+    <div class="nav-pill">
+      <span class="nav-pill-label">📍 Location</span>
+      <select>
+        <option>Any neighbourhood</option>
+        <option>Westlands</option>
+        <option>Karen</option>
+        <option>Kiambu Road</option>
+        <option>Lavington</option>
+        <option>Kilimani</option>
+        <option>Ruiru</option>
+        <option>Gigiri</option>
+        <option>Riverside</option>
+        <option>Thika Road</option>
+      </select>
+    </div>
+    <div class="nav-pill">
+      <span class="nav-pill-label">📅 Check-in</span>
+      <input type="date">
+    </div>
+    <div class="nav-pill">
+      <span class="nav-pill-label">📅 Check-out</span>
+      <input type="date">
+    </div>
+    <div class="nav-pill">
+      <span class="nav-pill-label">👥 Guests</span>
+      <select>
+        <option>1 guest</option>
+        <option>2 guests</option>
+        <option>3 guests</option>
+        <option>4 guests</option>
+        <option>5+ guests</option>
+      </select>
+    </div>
+    <button class="search-btn" onclick="showToast('🔍 Searching...')">🔍</button>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link nav-host" href="#host">Become a Host</a>
+  </div>
+</nav>
+
+<!-- SEARCH BAR -->
+<div style="padding:20px 5% 0; background:var(--white);">
+  <div style="display:flex; align-items:stretch; border:1.5px solid var(--border); border-radius:50px; overflow:hidden; background:var(--white); box-shadow:var(--shadow); max-width:900px; transition:border-color .2s, box-shadow .2s;" id="mainSearchBar">
+    <div class="nav-pill" style="flex:2;">
+      <span class="nav-pill-label">📍 Location</span>
+      <select style="font-size:14px;">
+        <option>Any neighbourhood</option>
+        <option>Westlands</option>
+        <option>Karen</option>
+        <option>Kiambu Road</option>
+        <option>Lavington</option>
+        <option>Kilimani</option>
+        <option>Ruiru</option>
+        <option>Gigiri</option>
+        <option>Riverside</option>
+        <option>Thika Road</option>
+      </select>
+    </div>
+    <div class="nav-pill" style="flex:2;">
+      <span class="nav-pill-label">📅 Check-in</span>
+      <input type="date" style="font-size:14px;">
+    </div>
+    <div class="nav-pill" style="flex:2;">
+      <span class="nav-pill-label">📅 Check-out</span>
+      <input type="date" style="font-size:14px;">
+    </div>
+    <div class="nav-pill" style="flex:1.5;">
+      <span class="nav-pill-label">👥 Guests</span>
+      <select style="font-size:14px;">
+        <option>1 guest</option>
+        <option>2 guests</option>
+        <option>3 guests</option>
+        <option>4 guests</option>
+        <option>5+ guests</option>
+      </select>
+    </div>
+    <button style="background:var(--terracotta); color:white; border:none; padding:0 28px; font:500 14px 'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; gap:8px; white-space:nowrap; transition:background .15s;" onclick="showToast('🔍 Searching available properties...')" onmouseover="this.style.background='#A8431E'" onmouseout="this.style.background='var(--terracotta)'">
+      Search Stays ➔
+    </button>
+  </div>
+</div>
+
+<!-- LISTINGS SECTION -->
+<section id="listings">
+  <div class="prop-grid" id="propGrid">
+    <!-- Cards generated by JS -->
+  </div>
+</section>
+
+<!-- EXPERIENCES -->
+<section id="experiences" style="background:var(--savanna-light); border-radius:28px; margin:0 3%;">
+  <div class="section-header">
+    <div>
+      <h2>Nairobi Experiences</h2>
+      <p style="margin-top:6px;">Book curated activities with local hosts — add unforgettable moments to your stay</p>
+    </div>
+    <a class="see-all" onclick="showToast('Exploring all experiences...')">View all</a>
+  </div>
+  <div class="exp-grid">
+    <div class="exp-card" onclick="showToast('Opening Nairobi National Park Safari...')">
+      <span class="exp-icon">🦁</span>
+      <h3>Sunrise Safari in Nairobi Park</h3>
+      <p>Game drive at Africa's only urban national park — lions, giraffes, and zebras minutes from the CBD.</p>
+      <span class="exp-price">From KES 4,500 / person</span>
+    </div>
+    <div class="exp-card" onclick="showToast('Opening Maasai Market Tour...')">
+      <span class="exp-icon">🎨</span>
+      <h3>Maasai Market Shopping Tour</h3>
+      <p>Navigate Nairobi's vibrant weekly markets with a local guide. Authentic crafts, jewellery, and bargaining tips.</p>
+      <span class="exp-price">From KES 2,000 / person</span>
+    </div>
+    <div class="exp-card" onclick="showToast('Opening Nyama Choma Experience...')">
+      <span class="exp-icon">🍖</span>
+      <h3>Nyama Choma Evening</h3>
+      <p>A guided evening through Nairobi's best grills — local beer, roasted meat, and great company.</p>
+      <span class="exp-price">From KES 3,000 / person</span>
+    </div>
+    <div class="exp-card" onclick="showToast('Opening Karura Forest Hike...')">
+      <span class="exp-icon">🌿</span>
+      <h3>Karura Forest Morning Hike</h3>
+      <p>Guided nature walk through Karura Forest — waterfalls, caves, and 1,000+ bird species with a naturalist.</p>
+      <span class="exp-price">From KES 1,500 / person</span>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section>
+  <div class="section-header">
+    <div>
+      <h2>Why guests love NairobiStays</h2>
+    </div>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="why-icon">🏠</span>
+      <h3>Verified Listings</h3>
+      <p>Every property personally inspected — photos, amenities, and house rules are always accurate.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">📲</span>
+      <h3>Pay via M-Pesa</h3>
+      <p>Seamless M-Pesa payments — no cards needed. Secure and instant confirmation every time.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">🔒</span>
+      <h3>Gated & Secure</h3>
+      <p>All listings are in gated communities with 24-hr security, CCTV, and reliable backup power.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">💧</span>
+      <h3>Water & Power Backup</h3>
+      <p>Borehole water, overhead tanks, and generators — so you're never inconvenienced.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">🛟</span>
+      <h3>24/7 Host Support</h3>
+      <p>WhatsApp and phone support around the clock. Real humans, not chatbots.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOST CTA -->
+<section id="host" style="padding:20px 5% 60px;">
+  <div class="host-cta">
+    <div class="hc-content">
+      <h2>Turn your property into <em>extra income</em></h2>
+      <p>Join hundreds of Nairobi hosts earning KES 80,000–250,000/month. We handle the listings, guest vetting, and payments — you just host.</p>
+      <a class="btn-savanna" onclick="showToast('🏠 Opening host registration...')">Start Hosting Today</a>
+    </div>
+    <div class="hc-visual"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="logo">NairobiStays</span>
+      <p>The best way to find short and long-term rentals across Nairobi, Kiambu, and the wider Greater Nairobi area.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="#">Westlands</a>
+      <a href="#">Karen & Langata</a>
+      <a href="#">Kiambu Road</a>
+      <a href="#">Lavington</a>
+      <a href="#">Ruiru & Juja</a>
+    </div>
+    <div class="footer-col">
+      <h4>Hosting</h4>
+      <a href="#">List your property</a>
+      <a href="#">Pricing calculator</a>
+      <a href="#">Host resources</a>
+      <a href="#">Property management</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#">Help centre</a>
+      <a href="#">Safety info</a>
+      <a href="#">Cancellation policy</a>
+      <a href="#">Contact us</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 NairobiStays · Built for Nairobi, by Nairobians</span>
+    <div class="mpesa" style="color:rgba(255,255,255,0.6);">
+      <span style="font-size:12px;">Payments via</span>
+      <span style="font-size:13px; font-weight:500; color:var(--savanna);">M-Pesa · Visa · Mastercard</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const properties = [
+  {
+    id:1, name:"Penthouse Studio — Westlands", neighbourhood:"Westlands",
+    img:"https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600&q=80",
+    price:6500, beds:1, baths:1, type:"Studio",
+    rating:4.95, reviews:127, badge:"Superhost",
+    desc:"A chic, fully furnished studio on the 12th floor with sweeping Nairobi skyline views. Fibre Wi-Fi, backup power, and secure parking. Walking distance to Sarit Centre and Westgate Mall.",
+    amenities:["📶 100Mbps Fibre Wi-Fi","🅿️ Secure Parking","🔌 Generator Backup","🍳 Full Kitchen","🛁 En-suite Bathroom","🌡️ A/C & Fan","🔐 Smart Lock Entry","🛡️ 24-hr Security"],
+    tags:["City Views","Fibre Wi-Fi","Superhost"]
+  },
+  {
+    id:2, name:"Garden Villa — Karen", neighbourhood:"Karen",
+    img:"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&q=80",
+    price:18000, beds:3, baths:2, type:"Villa",
+    rating:4.97, reviews:89, badge:"New",
+    desc:"Stunning 3-bedroom villa nestled in the leafy Karen suburb. Private garden, pool access, and breathtaking views of the Ngong Hills. Minutes from Karen Shopping Centre and Karen Blixen Museum.",
+    amenities:["🏊 Pool Access","🌳 Private Garden","🅿️ 2 Parking Bays","📶 Fibre Wi-Fi","🍳 Full Kitchen + Pantry","🛁 2 Bathrooms","🔒 Gated Community","🌄 Ngong Hills View"],
+    tags:["Pool Access","Karen","Quiet & Lush"]
+  },
+  {
+    id:3, name:"Modern 2BR — Kilimani", neighbourhood:"Kilimani",
+    img:"https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=600&q=80",
+    price:9500, beds:2, baths:2, type:"2 Bedroom",
+    rating:4.88, reviews:203, badge:"Guest Favourite",
+    desc:"Bright, spacious 2-bedroom apartment in the heart of Kilimani. Perfect for families or work trips. 5 minutes from Yaya Centre, Ngong Road, and excellent eateries.",
+    amenities:["📶 Wi-Fi","🧺 Washer + Dryer","🅿️ Parking","🍳 Full Kitchen","🛁 2 En-suite Bathrooms","📺 Smart TV","🔌 24-hr Power Backup","🛡️ CCTV Security"],
+    tags:["Guest Favourite","Near CBD","Family Friendly"]
+  },
+  {
+    id:4, name:"Executive Studio — Gigiri", neighbourhood:"Gigiri",
+    img:"https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&q=80",
+    price:7200, beds:1, baths:1, type:"Studio",
+    rating:4.92, reviews:61, badge:"",
+    desc:"Quiet executive studio ideal for diplomats, NGO workers, and long-stay guests. Close to Village Market, UN Complex, and American Embassy. Fully serviced.",
+    amenities:["📶 High-Speed Wi-Fi","🧹 Weekly Housekeeping","🅿️ Secure Parking","🍳 Kitchenette","📺 Smart TV","🔐 Keycard Access","🛡️ 24-hr Guard","🌿 Landscaped Grounds"],
+    tags:["Diplomatic Area","Long Stays OK","Quiet"]
+  },
+  {
+    id:5, name:"Cosy 1BR — Ruiru", neighbourhood:"Ruiru",
+    img:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
+    price:4500, beds:1, baths:1, type:"1 Bedroom",
+    rating:4.85, reviews:44, badge:"",
+    desc:"Affordable, comfortable 1-bedroom apartment in Ruiru town. Great for budget travellers or long-stay guests. Quick Thika Road access to Nairobi CBD in under 30 minutes.",
+    amenities:["📶 Wi-Fi","🍳 Full Kitchen","🅿️ Parking","🛁 Bathroom","📺 TV","🔒 Gated","💧 Borehole Water","🔌 Power Backup"],
+    tags:["Budget Friendly","Ruiru","Thika Road"]
+  },
+  {
+    id:6, name:"Luxury 3BR — Lavington", neighbourhood:"Lavington",
+    img:"https://images.unsplash.com/photo-1554995207-c18c203602cb?w=600&q=80",
+    price:22000, beds:3, baths:3, type:"3+ Bedroom",
+    rating:5.0, reviews:38, badge:"Superhost",
+    desc:"The pinnacle of Nairobi luxury short-stay living. Fully-equipped 3-bed, 3-bath apartment in prestigious Lavington with gym access, rooftop, and concierge service.",
+    amenities:["🏋️ Gym Access","🌇 Rooftop Terrace","📶 1Gbps Wi-Fi","🧹 Daily Housekeeping","🅿️ 2 Parking Bays","🍳 Chef's Kitchen","🛁 3 En-suite Bathrooms","🛎️ Concierge"],
+    tags:["Luxury","Superhost","Rooftop"]
+  }
+];
+
+let wishlist = new Set();
+let activeModal = null;
+
+function renderCards(list){
+  const grid = document.getElementById('propGrid');
+  grid.innerHTML = list.map(p => `
+    <div class="prop-card" onclick="openModal(${p.id})">
+      <div class="prop-img ${imgClass(p.id)}">
+        ${p.badge ? `<div class="prop-badge ${p.badge==='New'?'new':''}">${p.badge}</div>` : ''}
+        <button class="prop-wish ${wishlist.has(p.id)?'wished':''}" id="wish-${p.id}" onclick="toggleWish(event,${p.id})">
+          ${wishlist.has(p.id)?'❤️':'🤍'}
+        </button>
+      </div>
+      <div class="prop-info">
+        <div class="prop-top">
+          <span class="prop-loc">📍 ${p.neighbourhood}</span>
+          <span class="prop-rating">⭐ ${p.rating} <span style="color:var(--muted);font-weight:400;">(${p.reviews})</span></span>
+        </div>
+        <div class="prop-name">${p.name}</div>
+        <div class="prop-meta">${p.beds} bed · ${p.baths} bath · ${p.type}</div>
+        <div class="prop-price">
+          <span class="amount">KES ${p.price.toLocaleString()}</span>
+          <span class="per">/ night</span>
+          <span class="usd">≈ $${Math.round(p.price/130)}</span>
+        </div>
+        <div class="prop-tags">${p.tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function imgClass(id){
+  return ['','pi1','pi2','pi3','pi4','pi5','pi6'][id]||'pi1';
+}
+
+function toggleWish(e, id){
+  e.stopPropagation();
+  if(wishlist.has(id)){ wishlist.delete(id); showToast('Removed from wishlist'); }
+  else { wishlist.add(id); showToast('❤️ Saved to your wishlist'); }
+  renderCards(properties);
+}
+
+function openModal(id){
+  activeModal = properties.find(p=>p.id===id);
+  if(!activeModal) return;
+  document.getElementById('modal-title').textContent = activeModal.name;
+  document.getElementById('modal-img').style.backgroundImage = `url('${activeModal.img}')`;
+  document.getElementById('modal-loc').textContent = `📍 ${activeModal.neighbourhood} · ${activeModal.beds} bed · ${activeModal.baths} bath`;
+  document.getElementById('modal-rating').textContent = `⭐ ${activeModal.rating} (${activeModal.reviews} reviews)`;
+  document.getElementById('modal-desc').textContent = activeModal.desc;
+  document.getElementById('modal-amenities').innerHTML = activeModal.amenities.map(a=>`<div class="amenity">${a}</div>`).join('');
+  document.getElementById('price-summary').style.display='none';
+  document.getElementById('checkin').value='';
+  document.getElementById('checkout').value='';
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  activeModal = null;
+}
+
+function calcPrice(){
+  if(!activeModal) return;
+  const ci = document.getElementById('checkin').value;
+  const co = document.getElementById('checkout').value;
+  if(!ci||!co) return;
+  const nights = Math.round((new Date(co)-new Date(ci))/(1000*60*60*24));
+  if(nights<=0) return;
+  const base = activeModal.price * nights;
+  const clean = Math.round(activeModal.price * 0.15);
+  const service = Math.round(base * 0.12);
+  const total = base + clean + service;
+  document.getElementById('nights-label').textContent = `${nights} night${nights>1?'s':''} × KES ${activeModal.price.toLocaleString()}`;
+  document.getElementById('nights-price').textContent = `KES ${base.toLocaleString()}`;
+  document.getElementById('clean-fee').textContent = `KES ${clean.toLocaleString()}`;
+  document.getElementById('service-fee').textContent = `KES ${service.toLocaleString()}`;
+  document.getElementById('total-price').textContent = `KES ${total.toLocaleString()}`;
+  document.getElementById('price-summary').style.display='block';
+}
+
+function bookNow(){
+  if(!activeModal) return;
+  const ci = document.getElementById('checkin').value;
+  const co = document.getElementById('checkout').value;
+  if(!ci||!co){ showToast('Please select your check-in and check-out dates'); return; }
+  closeModal();
+  showToast(`🎉 Request sent for ${activeModal.name}! You'll receive an M-Pesa prompt shortly.`);
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target===this) closeModal();
+});
+
+renderCards(properties);
+</script>
+</body>
+</html>
